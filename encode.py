@@ -54,8 +54,3 @@ def frequency_to_sound(frequencies, duration=0.2, volume=0.5, sample_rate=44100)
     stream.stop_stream()
     stream.close()
     p.terminate()
-
-if __name__ == "__main__":
-    # Example usage: play a BASE Hz tone for 2 seconds
-    freq = binary_to_frequency('10101010')
-    frequency_to_sound(freq, duration=2)

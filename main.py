@@ -12,7 +12,6 @@ def send_loop():
             break
         else:
             bits = text_to_bits(text)
-            print(bits)
 
             # Split into bytes and convert each to frequency
             frequencies = [util.START_FREQ]
@@ -20,7 +19,6 @@ def send_loop():
             for i in range(0, len(bits), 8):
                 byte = str(next_sequent) + bits[i:i+8]
                 next_sequent = 0 if next_sequent == 1 else 1
-                print(f"ASCII bits: {byte}")
                 freq = binary_to_frequency(byte)
                 frequencies.append(freq)
 
@@ -40,7 +38,7 @@ def receive_loop():
             print("\n----- New Message -----")
             next_sequent = 0
         elif rounded_freq == util.END_FREQ and next_sequent != -1:
-            print("\n----- End Message -----\n")
+            print("\n----- End Message -----")
             next_sequent = -1
             continue  # keep listening for next messages
 
