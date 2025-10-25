@@ -49,6 +49,27 @@ def listen_for_frequency(duration=1.0, sample_rate=44100, chunk_size=1024):
 
     return dominant_freq
 
+def binary_to_ascii(binary_str):
+    """
+    Convert a binary string to its ASCII representation.
+
+    :param binary_str: String of binary digits (e.g., '01000001')
+    :return: Corresponding ASCII character
+    """
+    if len(binary_str) % 8 != 0:
+        raise ValueError("Binary string length must be a multiple of 8")
+
+    ascii_chars = []
+    for i in range(0, len(binary_str), 8):
+        byte = binary_str[i:i+8]
+        ascii_char = chr(int(byte, 2))
+        ascii_chars.append(ascii_char)
+
+    return ''.join(ascii_chars)
+
 # Example usage
-freq = listen_for_frequency(duration=2)
-print(f"Detected frequency: {freq:.2f} Hz")
+# freq = listen_for_frequency(duration=2)
+# print(f"Detected frequency: {freq:.2f} Hz")
+
+ascii_char = binary_to_ascii('01001001')
+print(f"ASCII character: {ascii_char}")
