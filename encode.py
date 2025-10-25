@@ -83,7 +83,7 @@ def frequency_to_sound(frequencies, duration=0.9, volume=0.5, sample_rate=44100)
 
     # Concatenate all waveforms into one continuous stream
     full_waveform = np.concatenate(waveforms)
-    util.wait_until_next_interval()
+    # util.wait_until_next_interval()
     stream.write(full_waveform.tobytes())
 
     stream.stop_stream()
