@@ -56,7 +56,7 @@ def transmit(text, depth=0):
 # -----------------------------------------
 def send_loop():
     global listening_enabled
-    print("Welcome to the Vibe Code!")
+    print("Welcome to the General Reliable Acoustic Signal Standard!")
 
     while True:
         text = input("Enter text to transmit (or 'quit' to exit): ").strip()
