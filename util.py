@@ -9,4 +9,4 @@ def wait_until_next_interval(interval=1.0):
         time.sleep(sleep_duration)
   
 BASE = 1000
-INTERVAL = 25
+INTERVAL = 10

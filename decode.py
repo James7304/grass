@@ -91,16 +91,21 @@ def frq_to_bin(frq):
     frq -= util.BASE
     val = frq/util.INTERVAL
 
-    w_out_parity = int(val) >> 1
+    w_out_parity = int(val) & 255
     ret = ""
     for i in range(8):
         ret = str((w_out_parity >> i) & 1) + ret
 
     return ret
 
+next_sequent = 0
+
 # Example usage
 for freq in sound_to_frequency(duration=1):
     rounded_freq = round(freq / util.INTERVAL) * util.INTERVAL
-    binary = frq_to_bin(rounded_freq)
-    ascii_char = binary_to_ascii(binary)
-    print(ascii_char, end='', flush=True)
+    if (next_sequent == (rounded_freq >> 7) & 1):
+        binary = frq_to_bin(rounded_freq)
+        ascii_char = binary_to_ascii(binary)
+        print(ascii_char, end='', flush=True)
+        next_sequent = next_sequent = 0 if next_sequent == 1 else 1
+    
