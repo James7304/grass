@@ -32,13 +32,13 @@ def send_loop():
         listening_enabled.clear()
 
         bits = text_to_bits(text)
-        packet = packet.create_packet(bits)
+        send_packet = packet.create_packet(bits)
 
         # Build transmission frequency sequence
         frequencies = [util.START_FREQ]
         next_sequent = 0
-        for i in range(0, len(packet), 8):
-            byte = str(next_sequent) + packet[i:i+8]
+        for i in range(0, len(send_packet), 8):
+            byte = str(next_sequent) + send_packet[i:i+8]
             next_sequent = 0 if next_sequent == 1 else 1
             freq = binary_to_frequency(byte)
             frequencies.append(freq)
