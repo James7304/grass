@@ -50,5 +50,29 @@ def listen_for_frequency(duration=1.0, sample_rate=44100, chunk_size=1024):
     return dominant_freq
 
 # Example usage
-freq = listen_for_frequency(duration=2)
-print(f"Detected frequency: {freq:.2f} Hz")
+# freq = listen_for_frequency(duration=2)
+# print(f"Detected frequency: {freq:.2f} Hz")
+
+
+BASE = 440
+INTERVAL = 25
+
+
+def parityOf(int_type):
+    parity = 0
+    while(int_type):
+        parity = -parity
+        int_type = int_type & (int_type - 1)
+    return parity
+
+def frq_to_bin(frq):
+
+    frq -= BASE
+    val = frq/INTERVAL
+
+    w_out_parity = int(val) >> 1
+    ret = ""
+    for i in range(8):
+        ret = str((w_out_parity >> i) & 1) + ret
+
+    return ret
