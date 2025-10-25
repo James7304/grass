@@ -1,6 +1,7 @@
 from encode import text_to_bits, binary_to_frequency, frequency_to_sound
 from decode import sound_to_frequency, frq_to_bin, binary_to_ascii
 import util
+import packet
 import threading
 import sys
 
@@ -31,7 +32,7 @@ def send_loop():
         listening_enabled.clear()
 
         bits = text_to_bits(text)
-        packet = util.create_packet(bits)
+        packet = packet.create_packet(bits)
 
         # Build transmission frequency sequence
         frequencies = [util.START_FREQ]
