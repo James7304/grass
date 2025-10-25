@@ -11,9 +11,9 @@ def main():
             bits = text_to_bits(text)
             print(bits)
             for i in range(0, len(bits), 8):
-                freq = binary_to_frequency(bits[i:i+8])
-                frequency_to_sound(freq, duration=2)
                 print(f"ASCII bits: {bits[i:i+8]}")
+                freq = binary_to_frequency(bits[i:i+8])
+                frequency_to_sound(freq)
 
 
 if __name__ == "__main__":
