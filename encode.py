@@ -16,18 +16,19 @@ def binary_to_frequency(binary_str):
     """
     
     # Check that binary_data is exactly one byte
-    if len(binary_str) != 8:
-        raise ValueError("binary_data must be exactly one byte")
+    if len(binary_str) != 9:
+        raise ValueError("binary_data must be exactly one byte" + str(len(binary_str)))
     
     number_of_ones = binary_str.count('1')
     is_even = (number_of_ones % 2 == 0)
 
-    data_to_send = binary_str + ('0' if is_even else '1')
-    frequency = util.BASE + int(data_to_send, 2) * 25
+    # data_to_send = binary_str + ('0' if is_even else '1')
+    data_to_send = binary_str
+    frequency = util.BASE + int(data_to_send, 2) * util.INTERVAL
 
     return frequency
 
-def frequency_to_sound(frequencies, duration=0.9, volume=0.5, sample_rate=44100):
+def frequency_to_sound(frequencies, duration=1.9, volume=0.5, sample_rate=44100):
     """
     Play a list of frequencies as a continuous stream with no gaps.
     """

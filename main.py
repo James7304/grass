@@ -13,8 +13,10 @@ def main():
 
             # Split into bytes and convert each to frequency
             frequencies = []
+            next_sequent = 0
             for i in range(0, len(bits), 8):
-                byte = bits[i:i+8]
+                byte = str(next_sequent) + bits[i:i+8]
+                next_sequent = 0 if next_sequent == 1 else 1
                 print(f"ASCII bits: {byte}")
                 freq = binary_to_frequency(byte)
                 frequencies.append(freq)
