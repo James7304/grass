@@ -8,39 +8,6 @@ def text_to_bits(text):
     return ''.join(format(ord(char), '08b') for char in text)
 
 
-def frequency_to_sound(frequency, duration=0.9, volume=0.5, sample_rate=44100):
-    """
-    Play a sine wave of a given frequency.
-    
-    :param frequency: Frequency of the sound in Hz
-    :param duration: Duration of the sound in seconds
-    :param volume: Volume of the sound (0.0 to 1.0)
-    :param sample_rate: Sampling rate in Hz
-    """
-    p = pyaudio.PyAudio()
-    
-    # Generate the samples for the sine wave
-    t = np.linspace(0, duration, int(sample_rate * duration), False)
-    waveform = np.sin(2 * np.pi * frequency * t)
-    
-    # Normalize to 16-bit PCM and apply volume
-    waveform = (waveform * volume * 32767).astype(np.int16)
-    
-    # Open a stream
-    stream = p.open(format=pyaudio.paInt16,
-                    channels=1,
-                    rate=sample_rate,
-                    output=True)
-    
-    # Play the sound
-    util.wait_until_next_interval()
-    stream.write(waveform.tobytes())
-    
-    # Cleanup
-    stream.stop_stream()
-    stream.close()
-    p.terminate()
-
 def binary_to_frequency(binary_str):
     """
     Convert binary data to a frequency.
@@ -60,6 +27,36 @@ def binary_to_frequency(binary_str):
     frequency = util.BASE + int(data_to_send, 2) * 25
 
     return frequency
+
+def frequency_to_sound(frequencies, duration=0.9, volume=0.5, sample_rate=44100):
+    """
+    Play a list of frequencies as a continuous stream with no gaps.
+    """
+    p = pyaudio.PyAudio()
+    stream = p.open(format=pyaudio.paInt16,
+                    channels=1,
+                    rate=sample_rate,
+                    output=True)
+
+    waveforms = []
+
+    for freq in frequencies:
+        t = np.linspace(0, duration, int(sample_rate * duration), False)
+        waveform = np.sin(2 * np.pi * freq * t)
+        waveform = (waveform * volume * 32767).astype(np.int16)
+        waveforms.append(waveform)
+        
+        silence = np.zeros(int(sample_rate * 0.1), dtype=np.int16)
+        waveforms.append(silence)
+
+    # Concatenate all waveforms into one continuous stream
+    full_waveform = np.concatenate(waveforms)
+    util.wait_until_next_interval()
+    stream.write(full_waveform.tobytes())
+
+    stream.stop_stream()
+    stream.close()
+    p.terminate()
 
 if __name__ == "__main__":
     # Example usage: play a BASE Hz tone for 2 seconds

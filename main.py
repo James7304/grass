@@ -1,4 +1,4 @@
-from encode import text_to_bits, frequency_to_sound, binary_to_frequency
+from encode import text_to_bits, binary_to_frequency, frequency_to_sound
 
 def main():
     print("Welcome to the text-to-bits CLI tool!")
@@ -10,11 +10,17 @@ def main():
         else:
             bits = text_to_bits(text)
             print(bits)
-            for i in range(0, len(bits), 8):
-                print(f"ASCII bits: {bits[i:i+8]}")
-                freq = binary_to_frequency(bits[i:i+8])
-                frequency_to_sound(freq)
 
+            # Split into bytes and convert each to frequency
+            frequencies = []
+            for i in range(0, len(bits), 8):
+                byte = bits[i:i+8]
+                print(f"ASCII bits: {byte}")
+                freq = binary_to_frequency(byte)
+                frequencies.append(freq)
+
+            # Play all tones as a single continuous stream
+            frequency_to_sound(frequencies)
 
 if __name__ == "__main__":
     main()
