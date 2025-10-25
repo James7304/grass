@@ -1,7 +1,7 @@
 import pyaudio
 import numpy as np
 
-def listen_for_frequency(duration=1.0, sample_rate=44100, chunk_size=1024):
+def sound_to_frequency(duration=1.0, sample_rate=44100, chunk_size=1024):
     """
     Listen through the microphone and estimate the dominant frequency.
 
@@ -68,7 +68,7 @@ def binary_to_ascii(binary_str):
     return ''.join(ascii_chars)
 
 # Example usage
-# freq = listen_for_frequency(duration=2)
+# freq = sound_to_frequency(duration=2)
 # print(f"Detected frequency: {freq:.2f} Hz")
 
 ascii_char = binary_to_ascii('01001001')
