@@ -33,5 +33,26 @@ def play_sound(frequency, duration=1.0, volume=0.5, sample_rate=44100):
     stream.close()
     p.terminate()
 
+def binary_to_frequency(binary_str):
+    """
+    Convert binary data to a frequency.
+    
+    :param binary_data: Binary data (bytes)
+    :return: Frequency in Hz
+    """
+    
+    # Check that binary_data is exactly one byte
+    if len(binary_str) != 8:
+        raise ValueError("binary_data must be exactly one byte")
+    
+    number_of_ones = binary_str.count('1')
+    is_even = (number_of_ones % 2 == 0)
+
+    data_to_send = binary_str + ('0' if is_even else '1')
+    frequency = 440 + int(data_to_send, 2) * 25
+
+    return frequency
+
 # Example usage: play a 440 Hz tone for 2 seconds
-play_sound(440, duration=2)
+freq = binary_to_frequency('10101010')
+play_sound(freq, duration=2)
