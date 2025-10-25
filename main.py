@@ -1,7 +1,7 @@
 from encode import text_to_bits, binary_to_frequency, frequency_to_sound
 
 def main():
-    print("Welcome to the text-to-bits CLI tool!")
+    print("Welcome to the CLI tool!")
     while True:
         text = input("Enter text (or 'quit' to exit): ").strip()
         if text.lower() == "quit":
