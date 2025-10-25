@@ -1,4 +1,5 @@
 from encode import text_to_bits, binary_to_frequency, frequency_to_sound
+import util
 
 def main():
     print("Welcome to the CLI tool!")
@@ -12,7 +13,7 @@ def main():
             print(bits)
 
             # Split into bytes and convert each to frequency
-            frequencies = []
+            frequencies = [util.START_FREQ]
             next_sequent = 0
             for i in range(0, len(bits), 8):
                 byte = str(next_sequent) + bits[i:i+8]
@@ -22,6 +23,7 @@ def main():
                 frequencies.append(freq)
 
             # Play all tones as a single continuous stream
+            frequencies.append(util.END_FREQ)
             frequency_to_sound(frequencies)
 
 if __name__ == "__main__":
