@@ -58,6 +58,7 @@ def send_loop():
 def receive_loop():
     global listening_enabled
     next_sequent = -1
+    streamed_data = ""
 
     for freq in sound_to_frequency():  # Should be a microphone generator
 
@@ -70,13 +71,23 @@ def receive_loop():
         # Detect message start
         if rounded_freq == util.START_FREQ and next_sequent == -1:
             print("\n\n----- New Message -----")
+            print("Receiving: ", end='', flush=True)
             next_sequent = 0
             continue
 
         # Detect message end
         elif rounded_freq == util.END_FREQ and next_sequent != -1:
-            print("\n----- End Message -----")
+            # Check packet
+            try:
+                extracted_bits = packet.extract_packet(streamed_data)
+                message = binary_to_ascii(extracted_bits)
+                print("\nReceived Message: {}".format(message))
+            except ValueError as e:
+                print("\nError: {}".format(e))
+
+            print("----- End Message -----")
             next_sequent = -1
+            streamed_data = ""
             restore_prompt()
             continue
 
@@ -85,8 +96,11 @@ def receive_loop():
             expected_seq = (int((rounded_freq - util.BASE) / util.INTERVAL) >> 8) & 1
             if next_sequent == expected_seq:
                 binary = frq_to_bin(rounded_freq)
+                streamed_data += binary
+
                 ascii_char = binary_to_ascii(binary)
-                print(ascii_char, end='', flush=True)
+                if len(streamed_data) > 16:
+                    print(ascii_char, end='', flush=True)
                 next_sequent = 0 if next_sequent == 1 else 1
 
 
