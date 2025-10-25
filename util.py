@@ -12,6 +12,7 @@ BASE = 1100
 INTERVAL = 25
 
 DURATION = 0.2  # seconds
+TIMEOUT = 5  # seconds
 
 START_FREQ = 1000
 END_FREQ = 1025

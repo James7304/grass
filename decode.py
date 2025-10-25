@@ -1,9 +1,10 @@
 import pyaudio
 import numpy as np
+import time
 
 import util
 
-def sound_to_frequency(duration=util.DURATION, sample_rate=44100, chunk_size=1024):
+def sound_to_frequency(duration=util.DURATION, sample_rate=44100, chunk_size=1024, timeout=None):
     """
     Listen through the microphone and estimate the dominant frequency.
 
@@ -21,9 +22,13 @@ def sound_to_frequency(duration=util.DURATION, sample_rate=44100, chunk_size=102
                     frames_per_buffer=chunk_size)
 
     try:
+        start = time.time()
         while True:
             # Wait until the time has reached a 1 second interval
             # util.wait_until_next_interval()
+
+            if timeout and (time.time() - start) > timeout:
+                raise TimeoutError("Listening timed out after {} seconds".format(timeout))
 
             frames = []
             num_chunks = int(sample_rate / chunk_size * duration)
