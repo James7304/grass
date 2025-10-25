@@ -11,5 +11,7 @@ def wait_until_next_interval(interval=1.0):
 BASE = 1100
 INTERVAL = 25
 
+DURATION = 0.2  # seconds
+
 START_FREQ = 1000
 END_FREQ = 1025

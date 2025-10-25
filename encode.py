@@ -28,7 +28,7 @@ def binary_to_frequency(binary_str):
 
     return frequency
 
-def frequency_to_sound(frequencies, duration=0.2, volume=0.5, sample_rate=44100):
+def frequency_to_sound(frequencies, duration=util.DURATION * 2, volume=0.5, sample_rate=44100):
     """
     Play a list of frequencies as a continuous stream with no gaps.
     """

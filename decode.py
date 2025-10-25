@@ -3,7 +3,7 @@ import numpy as np
 
 import util
 
-def sound_to_frequency(duration=0.1, sample_rate=44100, chunk_size=1024):
+def sound_to_frequency(duration=util.DURATION, sample_rate=44100, chunk_size=1024):
     """
     Listen through the microphone and estimate the dominant frequency.
 
