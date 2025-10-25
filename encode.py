@@ -2,6 +2,12 @@ import pyaudio
 import numpy as np
 import util
 
+
+def text_to_bits(text):
+    """Convert text into a string of ASCII bits."""
+    return ''.join(format(ord(char), '08b') for char in text)
+
+
 def frequency_to_sound(frequency, duration=0.9, volume=0.5, sample_rate=44100):
     """
     Play a sine wave of a given frequency.
@@ -55,6 +61,7 @@ def binary_to_frequency(binary_str):
 
     return frequency
 
-# Example usage: play a BASE Hz tone for 2 seconds
-freq = binary_to_frequency('10101010')
-frequency_to_sound(freq, duration=2)
+if __name__ == "__main__":
+    # Example usage: play a BASE Hz tone for 2 seconds
+    freq = binary_to_frequency('10101010')
+    frequency_to_sound(freq, duration=2)
