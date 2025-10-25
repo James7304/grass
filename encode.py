@@ -1,7 +1,7 @@
 import pyaudio
 import numpy as np
 
-def play_sound(frequency, duration=1.0, volume=0.5, sample_rate=44100):
+def frequency_to_sound(frequency, duration=1.0, volume=0.5, sample_rate=44100):
     """
     Play a sine wave of a given frequency.
     
@@ -55,4 +55,4 @@ def binary_to_frequency(binary_str):
 
 # Example usage: play a 440 Hz tone for 2 seconds
 freq = binary_to_frequency('10101010')
-play_sound(freq, duration=2)
+frequency_to_sound(freq, duration=2)
