@@ -1,75 +1,78 @@
 import pyaudio
 import numpy as np
+from scipy.signal import find_peaks
+import time
+from collections import defaultdict
 
-def sound_to_frequency(duration=1.0, sample_rate=44100, chunk_size=1024):
+def sound_to_frequency(chunk_size=1024, sample_rate=44100, magnitude_threshold=1000, min_duration=1.0):
     """
-    Listen through the microphone and estimate the dominant frequency.
+    Continuously listen and yield the strongest dominant frequency (highest amplitude) 
+    that lasts at least min_duration seconds and is of the form 440 + n*25 Hz.
 
-    :param duration: Duration to record in seconds
-    :param sample_rate: Sampling rate in Hz
-    :param chunk_size: Number of samples per read
-    :return: Estimated frequency in Hz
+    :param chunk_size: Samples per read
+    :param sample_rate: Sampling rate
+    :param magnitude_threshold: Minimum FFT magnitude to consider a frequency
+    :param min_duration: Minimum duration in seconds a frequency must persist to be reported
+    :yield: Strongest stable frequency in Hz
     """
     p = pyaudio.PyAudio()
-
     stream = p.open(format=pyaudio.paInt16,
                     channels=1,
                     rate=sample_rate,
                     input=True,
                     frames_per_buffer=chunk_size)
 
-    print("Listening...")
+    print("Listening for strongest stable peak... (Press Ctrl+C to stop)")
 
-    frames = []
-    num_chunks = int(sample_rate / chunk_size * duration)
-    for _ in range(num_chunks):
-        data = stream.read(chunk_size, exception_on_overflow=False)
-        frames.append(np.frombuffer(data, dtype=np.int16))
+    freq_start_time = None
+    last_freq = None
 
-    # Stop stream
-    stream.stop_stream()
-    stream.close()
-    p.terminate()
+    try:
+        while True:
+            data = stream.read(chunk_size, exception_on_overflow=False)
+            audio_data = np.frombuffer(data, dtype=np.int16)
 
-    # Combine frames into a single array
-    audio_data = np.hstack(frames)
+            # FFT
+            fft_result = np.fft.fft(audio_data)
+            fft_magnitude = np.abs(fft_result)
+            frequencies = np.fft.fftfreq(len(fft_result), 1 / sample_rate)
 
-    # Perform FFT
-    fft_result = np.fft.fft(audio_data)
-    fft_magnitude = np.abs(fft_result)
-    frequencies = np.fft.fftfreq(len(fft_result), 1 / sample_rate)
+            # Positive frequencies only
+            pos_freqs = frequencies[:len(frequencies)//2]
+            pos_magnitude = fft_magnitude[:len(frequencies)//2]
 
-    # Only consider positive frequencies
-    positive_freqs = frequencies[:len(frequencies)//2]
-    positive_magnitude = fft_magnitude[:len(frequencies)//2]
+            # Find index of highest amplitude above threshold
+            idx = np.argmax(pos_magnitude)
+            if pos_magnitude[idx] < magnitude_threshold:
+                last_freq = None
+                freq_start_time = None
+                continue
 
-    # Find the peak frequency
-    peak_index = np.argmax(positive_magnitude)
-    dominant_freq = positive_freqs[peak_index]
+            freq = pos_freqs[idx]
+            # Snap to 440 + n*25
+            n = round((freq - 440) / 25)
+            valid_freq = 440 + n * 25
+            print(valid_freq)
+            if abs(freq - valid_freq) > 12.5:  # tolerance
+                last_freq = None
+                freq_start_time = None
+                continue
 
-    return dominant_freq
+            current_time = time.time()
+            if last_freq == valid_freq:
+                # Check duration
+                if current_time - freq_start_time >= min_duration:
+                    yield valid_freq
+            else:
+                last_freq = valid_freq
+                freq_start_time = current_time
 
-def binary_to_ascii(binary_str):
-    """
-    Convert a binary string to its ASCII representation.
+    except KeyboardInterrupt:
+        print("\nStopped listening.")
+    finally:
+        stream.stop_stream()
+        stream.close()
+        p.terminate()
 
-    :param binary_str: String of binary digits (e.g., '01000001')
-    :return: Corresponding ASCII character
-    """
-    if len(binary_str) % 8 != 0:
-        raise ValueError("Binary string length must be a multiple of 8")
-
-    ascii_chars = []
-    for i in range(0, len(binary_str), 8):
-        byte = binary_str[i:i+8]
-        ascii_char = chr(int(byte, 2))
-        ascii_chars.append(ascii_char)
-
-    return ''.join(ascii_chars)
-
-# Example usage
-# freq = sound_to_frequency(duration=2)
-# print(f"Detected frequency: {freq:.2f} Hz")
-
-ascii_char = binary_to_ascii('01001001')
-print(f"ASCII character: {ascii_char}")
+for freq in sound_to_frequency():
+    print("Detected frequency:", round(freq, 1))
