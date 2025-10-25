@@ -82,8 +82,8 @@ def receive_loop():
                 extracted_bits = packet.extract_packet(streamed_data)
                 message = binary_to_ascii(extracted_bits)
                 print("\nReceived Message: {}".format(message))
-                frequency_to_sound([util.ACK_FREQ])
-                
+                frequency_to_sound([util.ACK_FREQ], duration=util.DURATION * 8)
+
                 print("----- End Message -----")
                 restore_prompt()
 
