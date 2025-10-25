@@ -8,39 +8,44 @@ def text_to_bits(text):
     return ''.join(format(ord(char), '08b') for char in text)
 
 
-def frequency_to_sound(frequency, duration=1, volume=0.5, sample_rate=44100):
+
+def frequencies_to_sound(frequencies, duration=1, volume=0.5, sample_rate=44100):
     """
-    Play a sine wave of a given frequency.
+    Play two sine waves simultaneously.
     
-    :param frequency: Frequency of the sound in Hz
+    :param frequencies: Tuple of two frequencies in Hz, e.g., (440, 660)
     :param duration: Duration of the sound in seconds
     :param volume: Volume of the sound (0.0 to 1.0)
     :param sample_rate: Sampling rate in Hz
     """
+    if not isinstance(frequencies, (list, tuple)) or len(frequencies) != 2:
+        raise ValueError("frequencies must be a tuple or list of two values")
+    
     p = pyaudio.PyAudio()
     
-    # Generate the samples for the sine wave
     t = np.linspace(0, duration, int(sample_rate * duration), False)
-    waveform = np.sin(2 * np.pi * frequency * t)
     
-    # Normalize to 16-bit PCM and apply volume
+    # Generate two sine waves and sum them
+    waveform = np.sin(2 * np.pi * frequencies[0] * t) + np.sin(2 * np.pi * frequencies[1] * t)
+    
+    # Normalize to avoid clipping
+    waveform = waveform / np.max(np.abs(waveform))
+    
+    # Apply volume and convert to 16-bit PCM
     waveform = (waveform * volume * 32767).astype(np.int16)
     
-    # Open a stream
     stream = p.open(format=pyaudio.paInt16,
                     channels=1,
                     rate=sample_rate,
                     output=True)
     
-    # Play the sound
     stream.write(waveform.tobytes())
     
-    # Cleanup
     stream.stop_stream()
     stream.close()
     p.terminate()
 
-def binary_to_frequency(binary_str):
+def binary_to_frequency(sequent_bit, binary_str):
     """
     Convert binary data to a frequency.
     
@@ -49,16 +54,20 @@ def binary_to_frequency(binary_str):
     """
     
     # Check that binary_data is exactly one byte
-    if len(binary_str) != 8:
-        raise ValueError("binary_data must be exactly one byte")
+    if len(binary_str) != 16:
+        raise ValueError("binary_data must be exactly two bytes")
     
     number_of_ones = binary_str.count('1')
     is_even = (number_of_ones % 2 == 0)
 
-    data_to_send = binary_str + ('0' if is_even else '1')
-    frequency = util.BASE + int(data_to_send, 2) * 25
+    data_to_send = sequent_bit + binary_str + ('0' if is_even else '1')
 
-    return frequency
+    first_nine = data_to_send[:9]
+    first_frequency = util.BASE + int(first_nine, 2) * 25
+    second_nine = data_to_send[9:]
+    second_frequency = util.BASE + int(second_nine, 2) * 25
+
+    return (first_frequency, second_frequency)
 
 def frequency_to_sound(frequencies, duration=0.9, volume=0.5, sample_rate=44100):
     """
@@ -74,7 +83,9 @@ def frequency_to_sound(frequencies, duration=0.9, volume=0.5, sample_rate=44100)
 
     for freq in frequencies:
         t = np.linspace(0, duration, int(sample_rate * duration), False)
-        waveform = np.sin(2 * np.pi * freq * t)
+        waveform = np.sin(2 * np.pi * freq[0] * t)
+        waveform += np.sin(2 * np.pi * freq[1] * t)
+        waveform = waveform / np.max(np.abs(waveform))
         waveform = (waveform * volume * 32767).astype(np.int16)
         waveforms.append(waveform)
         

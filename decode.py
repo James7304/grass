@@ -24,7 +24,6 @@ def sound_to_frequency(duration=1, sample_rate=44100, chunk_size=1024):
 
     try:
         while True:
-            # Wait until the time has reached a 1 second interval
             util.wait_until_next_interval()
 
             frames = []
@@ -45,14 +44,14 @@ def sound_to_frequency(duration=1, sample_rate=44100, chunk_size=1024):
             positive_freqs = frequencies[:len(frequencies)//2]
             positive_magnitude = fft_magnitude[:len(frequencies)//2]
 
-            # Find the peak frequency
-            peak_index = np.argmax(positive_magnitude)
-            dominant_freq = positive_freqs[peak_index]
+            # Find indices of the two largest peaks
+            peak_indices = positive_magnitude.argsort()[-2:][::-1]  # top 2 peaks
+            dominant_freqs = positive_freqs[peak_indices]
 
-            if (dominant_freq < util.BASE * 0.99):
-                continue
+            # Optional: ignore very low frequencies (noise)
+            dominant_freqs = [f for f in dominant_freqs if f > 20]
 
-            yield dominant_freq
+            yield tuple(dominant_freqs)
             
     except KeyboardInterrupt:
         print("\nStopped listening.")
@@ -99,8 +98,17 @@ def frq_to_bin(frq):
     return ret
 
 # Example usage
-for freq in sound_to_frequency(duration=1):
-    rounded_freq = round(freq / util.INTERVAL) * util.INTERVAL
-    binary = frq_to_bin(rounded_freq)
-    ascii_char = binary_to_ascii(binary)
-    print(ascii_char, end='', flush=True)
+for freqs in sound_to_frequency(duration=1):
+    freq_one = freqs[0]
+    freq_two = freqs[1]
+
+    rounded_freq_one = round(freq_one / util.INTERVAL) * util.INTERVAL
+    rounded_freq_two = round(freq_two / util.INTERVAL) * util.INTERVAL
+
+    binary_one = frq_to_bin(rounded_freq_one)
+    binary_two = frq_to_bin(rounded_freq_two)
+
+    ascii_char_one = binary_to_ascii(binary_one)
+    ascii_char_two = binary_to_ascii(binary_two)
+    print(ascii_char_one, end='', flush=True)
+    print(ascii_char_two, end='', flush=True)
