@@ -25,7 +25,7 @@ def sound_to_frequency(duration=1, sample_rate=44100, chunk_size=1024):
     try:
         while True:
             # Wait until the time has reached a 1 second interval
-            util.wait_until_next_interval()
+            # util.wait_until_next_interval()
 
             frames = []
             num_chunks = int(sample_rate / chunk_size * duration)

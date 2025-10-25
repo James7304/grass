@@ -8,5 +8,5 @@ def wait_until_next_interval(interval=1.0):
         # print("Sleeping for {:.3f} seconds to align with interval.".format(sleep_duration))
         time.sleep(sleep_duration)
   
-BASE = 1000
-INTERVAL = 10
+BASE = 440
+INTERVAL = 25
