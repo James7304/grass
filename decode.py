@@ -20,8 +20,6 @@ def sound_to_frequency(duration=0.1, sample_rate=44100, chunk_size=1024):
                     input=True,
                     frames_per_buffer=chunk_size)
 
-    print("Listening...")
-
     try:
         while True:
             # Wait until the time has reached a 1 second interval
