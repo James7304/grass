@@ -3,7 +3,7 @@ import numpy as np
 
 import util
 
-def sound_to_frequency(duration=1, sample_rate=44100, chunk_size=1024):
+def sound_to_frequency(duration=0.1, sample_rate=44100, chunk_size=1024):
     """
     Listen through the microphone and estimate the dominant frequency.
 
@@ -49,7 +49,7 @@ def sound_to_frequency(duration=1, sample_rate=44100, chunk_size=1024):
             peak_index = np.argmax(positive_magnitude)
             dominant_freq = positive_freqs[peak_index]
 
-            if (dominant_freq < util.BASE * 0.99):
+            if (dominant_freq < util.START_FREQ * 0.99):
                 continue
 
             yield dominant_freq
@@ -101,18 +101,18 @@ def frq_to_bin(frq):
 next_sequent = -1
 
 # Example usage
-for freq in sound_to_frequency(duration=1):
+for freq in sound_to_frequency():
     rounded_freq = round(freq / util.INTERVAL) * util.INTERVAL
 
-    if (rounded_freq == util.START_FREQ):
-        print("\n----- New Message -----")
+    if (rounded_freq == util.START_FREQ and next_sequent == -1):
+        print("----- New Message -----")
         next_sequent = 0
-    elif (rounded_freq == util.END_FREQ):
-        print("\n----- End Message -----")
+    elif (rounded_freq == util.END_FREQ and next_sequent != -1):
+        print("\n----- End Message -----\n")
         next_sequent = -1
         break
 
-    if (next_sequent == (int((rounded_freq - util.BASE)/util.INTERVAL) >> 8) & 1):
+    if (next_sequent == (int((rounded_freq - util.BASE)/util.INTERVAL) >> 8) & 1) and rounded_freq >= util.BASE * 0.99:
         binary = frq_to_bin(rounded_freq)
         ascii_char = binary_to_ascii(binary)
         print(ascii_char, end='', flush=True)

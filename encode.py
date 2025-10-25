@@ -28,7 +28,7 @@ def binary_to_frequency(binary_str):
 
     return frequency
 
-def frequency_to_sound(frequencies, duration=1.9, volume=0.5, sample_rate=44100):
+def frequency_to_sound(frequencies, duration=0.1, volume=0.5, sample_rate=44100):
     """
     Play a list of frequencies as a continuous stream with no gaps.
     """
@@ -46,7 +46,7 @@ def frequency_to_sound(frequencies, duration=1.9, volume=0.5, sample_rate=44100)
         waveform = (waveform * volume * 32767).astype(np.int16)
         waveforms.append(waveform)
         
-        silence = np.zeros(int(sample_rate * 0.1), dtype=np.int16)
+        silence = np.zeros(int(sample_rate * 0.05), dtype=np.int16)
         waveforms.append(silence)
 
     # Concatenate all waveforms into one continuous stream
