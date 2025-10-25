@@ -82,13 +82,17 @@ def receive_loop():
                 extracted_bits = packet.extract_packet(streamed_data)
                 message = binary_to_ascii(extracted_bits)
                 print("\nReceived Message: {}".format(message))
-            except ValueError as e:
-                print("\nError: {}".format(e))
+                frequency_to_sound([util.ACK_FREQ])
+                
+                print("----- End Message -----")
+                restore_prompt()
 
-            print("----- End Message -----")
+            except ValueError as e:
+                print("\nError: {}".format(e) + ". Waiting for retransmission...")
+
             next_sequent = -1
             streamed_data = ""
-            restore_prompt()
+
             continue
 
         # Decode characters
