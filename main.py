@@ -4,6 +4,7 @@ import util
 import packet
 import threading
 import sys
+import time
 
 # Shared event used to pause/resume listening
 listening_enabled = threading.Event()
@@ -13,6 +14,41 @@ def restore_prompt():
     """Reprints the input prompt after receiver prints output."""
     sys.stdout.write("\nEnter text to transmit (or 'quit' to exit): ")
     sys.stdout.flush()
+
+def transmit(text, depth=0):
+    bits = text_to_bits(text)
+    send_packet = packet.create_packet(bits)
+
+    # Build transmission frequency sequence
+    frequencies = [util.START_FREQ]
+    next_sequent = 0
+    for i in range(0, len(send_packet), 8):
+        byte = str(next_sequent) + send_packet[i:i+8]
+        next_sequent = 0 if next_sequent == 1 else 1
+        freq = binary_to_frequency(byte)
+        frequencies.append(freq)
+
+    frequencies.append(util.END_FREQ)
+
+    # Play the entire signal
+    frequency_to_sound(frequencies)
+
+    # Listen only for ACK
+    print("Waiting for ACK...")
+    
+    try:
+      for freq in sound_to_frequency(duration=util.DURATION * 4, timeout=util.TIMEOUT):
+          rounded_freq = round(freq / util.INTERVAL) * util.INTERVAL
+          if rounded_freq == util.ACK_FREQ:
+              print("ACK received!")
+              return
+    except TimeoutError:
+      if depth >= 2:
+          print("Maximum retransmission attempts reached. Aborting.")
+          return
+      
+      print("ACK wait timed out. Retrying...")
+      transmit(text, depth + 1)
 
 
 # -----------------------------------------
@@ -31,22 +67,7 @@ def send_loop():
         # STOP listening while sending to avoid self-decoding
         listening_enabled.clear()
 
-        bits = text_to_bits(text)
-        send_packet = packet.create_packet(bits)
-
-        # Build transmission frequency sequence
-        frequencies = [util.START_FREQ]
-        next_sequent = 0
-        for i in range(0, len(send_packet), 8):
-            byte = str(next_sequent) + send_packet[i:i+8]
-            next_sequent = 0 if next_sequent == 1 else 1
-            freq = binary_to_frequency(byte)
-            frequencies.append(freq)
-
-        frequencies.append(util.END_FREQ)
-
-        # Play the entire signal
-        frequency_to_sound(frequencies)
+        transmit(text)
 
         # TURN LISTENING BACK ON
         listening_enabled.set()
