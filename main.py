@@ -40,6 +40,7 @@ def receive_loop():
         elif rounded_freq == util.END_FREQ and next_sequent != -1:
             print("\n----- End Message -----")
             next_sequent = -1
+            print("Enter text to transmit (or 'quit' to exit): ", end='', flush=True)
             continue  # keep listening for next messages
 
         if next_sequent != -1 and rounded_freq >= util.BASE * 0.99:
