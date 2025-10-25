@@ -77,6 +77,25 @@ def binary_to_ascii(binary_str):
 
     return ''.join(ascii_chars)
 
+def parityOf(int_type):
+    parity = 0
+    while(int_type):
+        parity = -parity
+        int_type = int_type & (int_type - 1)
+    return parity
+
+def frq_to_bin(frq):
+
+    frq -= util.BASE
+    val = frq/util.INTERVAL
+
+    w_out_parity = int(val) >> 1
+    ret = ""
+    for i in range(8):
+        ret = str((w_out_parity >> i) & 1) + ret
+
+    return ret
+
 # Example usage
 for freq in sound_to_frequency(duration=1):
     print(f"Received Frequency: {freq} Hz")

@@ -1,5 +1,6 @@
 import pyaudio
 import numpy as np
+import util
 
 def frequency_to_sound(frequency, duration=1.0, volume=0.5, sample_rate=44100):
     """
@@ -49,10 +50,10 @@ def binary_to_frequency(binary_str):
     is_even = (number_of_ones % 2 == 0)
 
     data_to_send = binary_str + ('0' if is_even else '1')
-    frequency = 440 + int(data_to_send, 2) * 25
+    frequency = util.BASE + int(data_to_send, 2) * 25
 
     return frequency
 
-# Example usage: play a 440 Hz tone for 2 seconds
+# Example usage: play a BASE Hz tone for 2 seconds
 freq = binary_to_frequency('10101010')
 frequency_to_sound(freq, duration=2)
