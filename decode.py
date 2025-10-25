@@ -3,7 +3,7 @@ import numpy as np
 
 import util
 
-def sound_to_frequency(duration=0.9, sample_rate=44100, chunk_size=1024):
+def sound_to_frequency(duration=1, sample_rate=44100, chunk_size=1024):
     """
     Listen through the microphone and estimate the dominant frequency.
 
@@ -100,4 +100,7 @@ def frq_to_bin(frq):
 
 # Example usage
 for freq in sound_to_frequency(duration=1):
-    print(f"Received Frequency: {freq} Hz")
+    rounded_freq = round(freq / util.INTERVAL) * util.INTERVAL
+    binary = frq_to_bin(rounded_freq)
+    ascii_char = binary_to_ascii(binary)
+    print(ascii_char, end='', flush=True)
