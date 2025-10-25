@@ -74,5 +74,46 @@ def sound_to_frequency(chunk_size=1024, sample_rate=44100, magnitude_threshold=1
         stream.close()
         p.terminate()
 
+def binary_to_ascii(binary_str):
+    """
+    :param binary_str: String of binary digits (e.g., '01000001')
+    :return: Corresponding ASCII character
+    """
+    if len(binary_str) % 8 != 0:
+        raise ValueError("Binary string length must be a multiple of 8")
+
+    ascii_chars = []
+    for i in range(0, len(binary_str), 8):
+        byte = binary_str[i:i+8]
+        ascii_char = chr(int(byte, 2))
+        ascii_chars.append(ascii_char)
+
+    return ''.join(ascii_chars)
+
+def parityOf(int_type):
+    parity = 0
+    while(int_type):
+        parity = -parity
+        int_type = int_type & (int_type - 1)
+    return parity
+
+def frq_to_bin(frq):
+
+    frq -= BASE
+    val = frq/INTERVAL
+
+    w_out_parity = int(val) >> 1
+    ret = ""
+    for i in range(8):
+        ret = str((w_out_parity >> i) & 1) + ret
+
+    return ret
+
+BASE = 440
+INTERVAL = 25
+
+ascii_char = binary_to_ascii('01001001')
+print(f"ASCII character: {ascii_char}")
+
 for freq in sound_to_frequency():
     print("Detected frequency:", round(freq, 1))
