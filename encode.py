@@ -8,7 +8,7 @@ def text_to_bits(text):
     return ''.join(format(ord(char), '08b') for char in text)
 
 
-def frequency_to_sound(frequency, duration=0.9, volume=0.5, sample_rate=44100):
+def frequency_to_sound(frequency, duration=1, volume=0.5, sample_rate=44100):
     """
     Play a sine wave of a given frequency.
     
@@ -33,7 +33,6 @@ def frequency_to_sound(frequency, duration=0.9, volume=0.5, sample_rate=44100):
                     output=True)
     
     # Play the sound
-    util.wait_until_next_interval()
     stream.write(waveform.tobytes())
     
     # Cleanup

@@ -49,7 +49,9 @@ def sound_to_frequency(duration=0.9, sample_rate=44100, chunk_size=1024):
             peak_index = np.argmax(positive_magnitude)
             dominant_freq = positive_freqs[peak_index]
 
-            print(f"Dominant Frequency: {dominant_freq:.2f} Hz")
+            if (dominant_freq < util.BASE * 0.99):
+                continue
+
             yield dominant_freq
             
     except KeyboardInterrupt:
